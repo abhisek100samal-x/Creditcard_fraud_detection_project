@@ -120,18 +120,7 @@ The app will open at `http://localhost:8501`.
 
 ---
 
-## 📊 Sample Results
 
-> ⚠️ Metrics depend on the dataset you supply — the table below is a template. After running the app, copy the values shown on the **🤖 Model Performance** page here.
-
-| Model | Accuracy | Precision | Recall | F1-Score | AUC |
-|---|---|---|---|---|---|
-| Logistic Regression | — | — | — | — | — |
-| K-Nearest Neighbors | — | — | — | — | — |
-| Decision Tree | — | — | — | — | — |
-| **Random Forest** | — | — | — | — | — |
-
----
 
 ## 🛠️ Tech Stack
 
@@ -149,14 +138,3 @@ The app will open at `http://localhost:8501`.
 - [ ] Support model retraining from an uploaded labeled dataset
 - [ ] Add authentication for a production-style deployment
 
----
-
-## 📄 License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-<div align="center">
-Built with Streamlit · scikit-learn · Plotly — Aegis Fraud Intelligence Demo
-</div>
