@@ -21,7 +21,7 @@
 The app is built around a **glassmorphism-styled dark UI** with custom CSS, animated gauge charts, and Plotly visualizations themed to match — designed to look and feel like a real fraud-ops product rather than a bare-bones model demo.
 
 > 🎥 *Add a screenshot or screen recording of the Overview page here once deployed, e.g.:*
-> `![Aegis Overview](assets/overview-screenshot.png)`
+> ![Aegis Overview](assets/overview-screenshot.png)
 
 ---
 
