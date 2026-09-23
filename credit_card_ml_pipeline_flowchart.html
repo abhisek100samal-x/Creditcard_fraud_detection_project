@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Credit Card Classification — Model Pipeline</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --bg: #0a0f1a;
+    --panel: #121a2b;
+    --line: #2a3550;
+    --gold: #d4a03c;
+    --gold-dim: #8a6a2a;
+    --green: #4fae7c;
+    --coral: #d1684a;
+    --ink: #e9e7de;
+    --ink-dim: #8a93a6;
+    --mono: 'JetBrains Mono', monospace;
+    --display: 'Space Grotesk', sans-serif;
+    --body: 'Inter', sans-serif;
+    --card-w: 200px;
+    --row-gap: 74px;
+  }
+
+  *{ box-sizing: border-box; }
+
+  body{
+    margin:0;
+    background:
+      radial-gradient(ellipse 1100px 550px at 50% -10%, #182236 0%, transparent 60%),
+      var(--bg);
+    color: var(--ink);
+    font-family: var(--body);
+    padding: 56px 24px 90px;
+    display:flex;
+    justify-content:center;
+  }
+
+  .wrap{ width:100%; max-width: 1320px; }
+
+  /* ---------- Header ---------- */
+  .eyebrow{
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--gold);
+    text-transform: uppercase;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom: 14px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:7px; height:7px;
+    background: var(--gold);
+    border-radius:50%;
+    box-shadow: 0 0 8px 1px var(--gold);
+  }
+  h1{
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: clamp(26px, 3.4vw, 36px);
+    margin: 0 0 10px;
+    letter-spacing: -0.01em;
+  }
+  h1 span{ color: var(--gold); }
+  .sub{
+    color: var(--ink-dim);
+    font-size: 14.5px;
+    line-height: 1.6;
+    max-width: 62ch;
+    margin-bottom: 52px;
+    border-left: 2px solid var(--line);
+    padding-left: 14px;
+  }
+
+  /* ---------- Canvas / connectors ---------- */
+  .canvas{ position: relative; }
+
+  .connector-svg{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* ---------- Horizontal sequence ---------- */
+  .sequence{
+    display:flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    row-gap: var(--row-gap);
+    column-gap: 46px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .node{
+    position: relative;
+    width: var(--card-w);
+    background: linear-gradient(180deg, var(--panel), #0e1524);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 15px 16px;
+    flex-shrink: 0;
+  }
+  .node.start-end{
+    width: auto;
+    min-width: 90px;
+    padding: 12px 26px;
+    text-align:center;
+    border-radius: 999px;
+    background: linear-gradient(180deg, #1a2438, #0e1524);
+    border-color: var(--gold-dim);
+    align-self: center;
+  }
+  .node.start-end .step-title{ color: var(--gold); }
+  .node.end{ border-color: #4fae7c66; }
+  .node.end .step-title{ color: var(--green); }
+
+  .step-idx{
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--gold);
+    letter-spacing: 0.08em;
+  }
+  .step-title{
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 15px;
+    margin: 3px 0 0;
+    line-height: 1.25;
+  }
+  .step-detail{
+    margin-top: 7px;
+    color: var(--ink-dim);
+    font-size: 11.5px;
+    line-height: 1.55;
+  }
+  .step-detail ul{ margin: 5px 0 0; padding-left: 15px; }
+  .step-detail li{ margin: 2px 0; }
+  .tag{
+    display:inline-block;
+    font-family: var(--mono);
+    font-size: 9.5px;
+    color: var(--ink-dim);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 2px 6px;
+    margin: 5px 4px 0 0;
+  }
+
+  .ticker{
+    display:flex;
+    gap: 5px;
+    margin-top: 9px;
+    flex-wrap: wrap;
+  }
+  .ticker-item{
+    font-family: var(--mono);
+    font-size: 10px;
+    background: #0a0f1acc;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 4px 6px;
+    color: var(--ink);
+    display:flex;
+    flex-direction:column;
+    gap:1px;
+    min-width: 50px;
+  }
+  .ticker-item small{ color: var(--gold); font-size: 8.5px; letter-spacing: 0.05em; }
+
+  footer{
+    text-align:center;
+    margin-top: 76px;
+    color: var(--ink-dim);
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+
+  @media (max-width: 720px){
+    :root{ --card-w: 150px; --row-gap: 90px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="eyebrow">Model Workflow · Classification Pipeline</div>
+  <h1>Credit Card <span>Fraud</span> Classification</h1>
+  <p class="sub">An end-to-end pipeline: raw transaction data goes in, gets cleaned and explored, several classifiers are trained and scored side by side, and the best performer is saved.</p>
+
+  <div class="canvas" id="canvas">
+    <svg class="connector-svg" id="connector-svg"></svg>
+
+    <div class="sequence" id="sequence">
+
+      <div class="node start-end flow-node"><div class="step-title">Start</div></div>
+
+      <div class="node flow-node">
+        <div class="step-idx">01 · INGEST</div>
+        <div class="step-title">Load Credit Card Dataset</div>
+        <div class="step-detail">Source: ChatGPT-generated dataset.</div>
+      </div>
+
+      <div class="node flow-node">
+        <div class="step-idx">02 · EXPLORE</div>
+        <div class="step-title">Data Understanding</div>
+        <div class="step-detail">
+          <ul>
+            <li>Shape</li>
+            <li>Info</li>
+            <li>Describe</li>
+            <li>Null values</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="node flow-node">
+        <div class="step-idx">03 · PREPARE</div>
+        <div class="step-title">Data Preprocessing</div>
+        <div class="step-detail">
+          <ul>
+            <li>Remove duplicates</li>
+            <li>Handle missing values</li>
+            <li>Fix invalid entries</li>
+            <li>Encode categorical data</li>
+            <li>Feature scaling</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="node flow-node">
+        <div class="step-idx">04 · ANALYZE</div>
+        <div class="step-title">Exploratory Data Analysis</div>
+        <div class="step-detail">
+          <ul>
+            <li>Class distribution</li>
+            <li>Correlation heatmap</li>
+            <li>Histograms</li>
+            <li>Boxplots</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="node flow-node">
+        <div class="step-idx">05 · SPLIT</div>
+        <div class="step-title">Split Dataset</div>
+        <div class="step-detail">Train / Test partition.</div>
+        <span class="tag">80% Train</span><span class="tag">20% Test</span>
+      </div>
+
+      <div class="node flow-node">
+        <div class="step-idx">06 · TRAIN</div>
+        <div class="step-title">Train ML Models</div>
+        <div class="step-detail">
+          <ul>
+            <li>Logistic Regression</li>
+            <li>Decision Tree</li>
+            <li>Random Forest</li>
+            <li>KNN</li>
+            <li>XGBoost</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="node flow-node">
+        <div class="step-idx">07 · INFER</div>
+        <div class="step-title">Model Prediction</div>
+        <div class="step-detail">Run each trained model on the held-out test set.</div>
+      </div>
+
+      <div class="node flow-node">
+        <div class="step-idx">08 · SCORE</div>
+        <div class="step-title">Model Evaluation</div>
+        <div class="ticker">
+          <div class="ticker-item"><small>ACC</small>Accuracy</div>
+          <div class="ticker-item"><small>PREC</small>Precision</div>
+          <div class="ticker-item"><small>REC</small>Recall</div>
+          <div class="ticker-item"><small>F1</small>F1-Score</div>
+          <div class="ticker-item"><small>AUC</small>ROC-AUC</div>
+          <div class="ticker-item"><small>CM</small>Conf. Matrix</div>
+        </div>
+      </div>
+
+      <div class="node flow-node">
+        <div class="step-idx">09 · COMPARE</div>
+        <div class="step-title">Compare All Models</div>
+        <div class="step-detail">Rank models against one another using the evaluation metrics.</div>
+      </div>
+
+      <div class="node flow-node">
+        <div class="step-idx">10 · SELECT</div>
+        <div class="step-title">Select Best Performing Model</div>
+      </div>
+
+      <div class="node end flow-node">
+        <div class="step-idx">11 · SAVE</div>
+        <div class="step-title">Save Model</div>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>END-TO-END · LOAD → PREPROCESS → TRAIN → EVALUATE → SAVE</footer>
+</div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('canvas');
+  const svg = document.getElementById('connector-svg');
+
+  function rectRel(el){
+    const c = canvas.getBoundingClientRect();
+    const r = el.getBoundingClientRect();
+    return {
+      top: r.top - c.top, bottom: r.bottom - c.top,
+      left: r.left - c.left, right: r.right - c.left,
+      cx: r.left - c.left + r.width/2,
+      cy: r.top - c.top + r.height/2,
+      w: r.width, h: r.height
+    };
+  }
+
+  function draw(){
+    const c = canvas.getBoundingClientRect();
+    svg.setAttribute('width', c.width);
+    svg.setAttribute('height', c.height);
+    svg.setAttribute('viewBox', `0 0 ${c.width} ${c.height}`);
+
+    const nodes = Array.from(document.querySelectorAll('.flow-node'));
+    const rects = nodes.map(rectRel);
+
+    const defs = `
+      <defs>
+        <marker id="ah-gold" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L6,3 L0,6 Z" fill="#8a6a2a"></path>
+        </marker>
+      </defs>`;
+
+    let paths = '';
+
+    for (let i = 0; i < rects.length - 1; i++){
+      const a = rects[i];
+      const b = rects[i+1];
+      const sameRow = Math.abs(a.cy - b.cy) < 4;
+
+      if (sameRow){
+        // straight horizontal connector between the two cards
+        const x1 = a.right;
+        const x2 = b.left - 8;
+        const y = a.cy;
+        paths += `<path d="M ${x1} ${y} L ${x2} ${y}" fill="none" stroke="#2a3550" stroke-width="2"></path>`;
+        paths += `<path d="M ${x1} ${y} L ${x2} ${y}" fill="none" stroke="none" marker-end="url(#ah-gold)"></path>`;
+        // draw a tiny visible arrowhead segment right before b.left
+        paths += `<path d="M ${x2-0.1} ${y} L ${x2} ${y}" fill="none" stroke="#8a6a2a" stroke-width="2" marker-end="url(#ah-gold)"></path>`;
+      } else {
+        // wrap to next row: elbow connector — out right, down, across, into left of next card
+        const midX = a.right + 26;
+        const x1 = a.right;
+        const y1 = a.cy;
+        const y2 = b.cy;
+        const x2 = b.left - 8;
+        const d = `M ${x1} ${y1}
+                   L ${midX} ${y1}
+                   L ${midX} ${y2}
+                   L ${x2} ${y2}`;
+        paths += `<path d="${d}" fill="none" stroke="#2a3550" stroke-width="2"></path>`;
+        paths += `<path d="M ${x2-0.1} ${y2} L ${x2} ${y2}" fill="none" stroke="#8a6a2a" stroke-width="2" marker-end="url(#ah-gold)"></path>`;
+      }
+    }
+
+    svg.innerHTML = defs + paths;
+  }
+
+  let raf;
+  function scheduleDraw(){
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('load', scheduleDraw);
+  window.addEventListener('resize', scheduleDraw);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleDraw);
+  new ResizeObserver(scheduleDraw).observe(canvas);
+  scheduleDraw();
+  setTimeout(scheduleDraw, 300);
+})();
+</script>
+
+</body>
+</html>
